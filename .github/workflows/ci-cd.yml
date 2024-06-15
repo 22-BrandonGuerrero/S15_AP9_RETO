@@ -21,7 +21,7 @@ jobs:
         with:
           args: >
             -Dsonar.projectKey=22-BrandonGuerrero_S11_AP7_Reto
-            -Dsonar.organization="Brandon Guerrero"
+            -Dsonar.organization=BrandonGuerrero
             -Dsonar.host.url=https://sonarcloud.io
             -Dsonar.login=${{ secrets.SONAR_TOKEN }}
 
