@@ -1,4 +1,4 @@
-name: SonarCloud and Docker Build
+name: SonarCloud + Docker Hub
 on:
   push:
     branches:
@@ -7,43 +7,25 @@ on:
 jobs:
   # SONARCLOUD
   sonarcloud:
-    name: Build and Analyze
+    name: SonarCloud
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '16'
-      - name: Cache SonarCloud packages
-        uses: actions/cache@v3
-        with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
-      - name: Cache Node.js modules
-        uses: actions/cache@v3
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: ${{ runner.os }}-npm
-      - name: Install dependencies
-        run: npm install
-      - name: Build and analyze
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: |
-          npm run build
-          npx sonar-scanner \
-            -Dsonar.projectKey=22-BrandonGuerrero_S11_AP7_Reto \
-            -Dsonar.organization=BrandonGuerrero \
-            -Dsonar.host.url=https://sonarcloud.io \
+        with:
+          args: >
+            -Dsonar.projectKey=22-BrandonGuerrero_S11_AP7_Reto
+            -Dsonar.organization=BrandonGuerrero
+            -Dsonar.host.url=https://sonarcloud.io
             -Dsonar.login=${{ secrets.SONAR_TOKEN }}
 
-  # DOCKER
+  # DOCKER HUB
   docker:
     name: Build and Push Docker Image
     runs-on: ubuntu-latest
@@ -51,22 +33,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '16'
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Build the project
-        run: npm run build
-
       - name: Log in to Docker Hub
-        run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+        run: echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
 
       - name: Build Docker image
-        run: docker build -t brandong17/t02_translator:latest .
+        run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/t02_translate_fe:latest .
 
       - name: Push Docker image to Docker Hub
-        run: docker push brandong17/t02_translator:latest
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/t02_translate_fe:latest
