@@ -20,8 +20,8 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           args: >
-            -Dsonar.projectKey=22-BrandonGuerrero
-            -Dsonar.organization=BrandonGuerrero
+            -Dsonar.projectKey=22-BrandonGuerrero_S15_AP9_RETO
+            -Dsonar.organization=22-brandonguerrero
             -Dsonar.host.url=https://sonarcloud.io
             -Dsonar.login=${{ secrets.SONAR_TOKEN }}
 
